@@ -1,0 +1,8 @@
+#!/bin/sh
+
+readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
+
+target="$1"
+sourceFile="$2"
+
+"$OPENSCAD" -o "$target" "$sourceFile"
