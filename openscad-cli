@@ -11,9 +11,9 @@ if [ $# $GREATER_THAN 2 ]
 then
   if [ $1 == "start" ]
   then
-    echo "usage: openscad_cli start filename (without extension)"
+    echo "usage: osc start filename (without extension)"
   else
-    echo "usage: openscad_cli _command_ (without params)"
+    echo "usage: osc _command_ (without params)"
   fi
 fi
 
@@ -25,9 +25,9 @@ while [ $# $GREATER_THAN 0 ]; do
     start)
       if [ $# $GREATER_THAN 2 ]
       then
-        echo "useage: openscad_cli start filename (without extension)"
+        echo "useage: osc start filename (without extension)"
       fi
-      mkdir -p "data"
+      mkdir -p "osc-data"
       echo $file_name > data/file_name
       touch $file_name".scad"
     ;;
