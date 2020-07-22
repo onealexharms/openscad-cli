@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
@@ -14,6 +14,7 @@ then
   echo "or \`osc _command_\` by itself."
   echo "If that's unexpected, check the README."
 fi
+
 if [ $# $GREATER_THAN 2 ]
 then
   if [ $1 == "start" ]
@@ -30,19 +31,18 @@ fi
 while [ $# $GREATER_THAN 0 ]; do
   case "$1" in
     start)
-      if [ $# $GREATER_THAN 2 ]
+      if [ $# == 1 ]
       then
         echo "useage: osc start filename (without extension)"
       fi
-      mkdir -p "osc-data"
-      echo $file_name > data/file_name
+      echo $file_name > .osc-data
       touch $file_name".scad"
     ;;
     test)
     ;;
     render)
+      file_name=$(cat .osc-data)
       "$OPENSCAD" -o "$file_name.stl" "$file_name.scad"
-      echo "YUP"
     ;;
     print)
     ;;
