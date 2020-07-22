@@ -4,26 +4,32 @@ readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
 action="$1"
 filename="$2"
+GREATER_THAN="-gt"
+rm -f test/*.stl
 
-#"$OPENSCAD" -o "$target" "$sourceFile"
+if [ $# $GREATER_THAN 2 ]
+then
+  if [ $1 == "start" ]
+  then
+    echo "usage: openscad_cli start filename (without extension)"
+  else
+    echo "usage: openscad_cli _command_ (without params)"
+  fi
+fi
 
 # $# is number of params remaining in the list
-# -gt is greater-than *eyeroll*
-# the first [ is an alias for the command test
-# the second ] is just so you don't have
-# to stab yourself in the eye
-# shift moves to the next parameter
-# but then the lone paren means you still
-# have to stab your eye out
-while [ $# -gt 0 ]; do
+# the first [ is an alias for the command test, the second ] is just pretty
+# shift moves to the next parameter. Lone paren is for real.
+while [ $# $GREATER_THAN 0 ]; do
   case "$1" in
     start)
+      export OSCLI_ACTIVE_FILE=$1
     ;;
     test)
     ;;
     render)
       "$OPENSCAD" -o "$2.stl" "$2.scad"
-      echo "YUPf"
+      echo "YUP"
     ;;
     print)
     ;;
