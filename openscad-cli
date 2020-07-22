@@ -3,7 +3,7 @@
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
 action="$1"
-filename="$2"
+file_name="$2"
 GREATER_THAN="-gt"
 rm -f test/*.stl
 
@@ -23,12 +23,18 @@ fi
 while [ $# $GREATER_THAN 0 ]; do
   case "$1" in
     start)
-      export OSCLI_ACTIVE_FILE=$1
+      if [ $# $GREATER_THAN 2 ]
+      then
+        echo "useage: openscad_cli start filename (without extension)"
+      fi
+      mkdir -p "data"
+      echo $file_name > data/file_name
+      touch $file_name".scad"
     ;;
     test)
     ;;
     render)
-      "$OPENSCAD" -o "$2.stl" "$2.scad"
+      "$OPENSCAD" -o "$file_name.stl" "$file_name.scad"
       echo "YUP"
     ;;
     print)
