@@ -2,7 +2,31 @@
 
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
-target="$1"
-sourceFile="$2"
+action="$1"
+filename="$2"
 
-"$OPENSCAD" -o "$target" "$sourceFile"
+#"$OPENSCAD" -o "$target" "$sourceFile"
+
+# $# is number of params remaining in the list
+# -gt is greater-than *eyeroll*
+# the first [ is an alias for the command test
+# the second ] is just so you don't have
+# to stab yourself in the eye
+# shift moves to the next parameter
+# but then the lone paren means you still
+# have to stab your eye out
+while [ $# -gt 0 ]; do
+  case "$1" in
+    start)
+    ;;
+    test)
+    ;;
+    render)
+      "$OPENSCAD" -o "$2.stl" "$2.scad"
+      echo "YUPf"
+    ;;
+    print)
+    ;;
+  esac
+  shift
+done
