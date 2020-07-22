@@ -7,6 +7,13 @@ file_name="$2"
 GREATER_THAN="-gt"
 rm -f test/*.stl
 
+if [ $# == 0 ]
+then
+  echo "That doesn't work. You're gonna need some params."
+  echo "You can use \`osc start _name_\` (without file extension)"
+  echo "or \`osc _command_\` by itself."
+  echo "If that's unexpected, check the README."
+fi
 if [ $# $GREATER_THAN 2 ]
 then
   if [ $1 == "start" ]
