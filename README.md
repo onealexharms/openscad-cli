@@ -17,6 +17,7 @@ OpenSCAD-cli is a simple shell script, and it's installed using a very tiny inst
 ## Using it
 `osc start mything` will create a file, mything.scad, which you can edit however you want.
 `osc render` will create an .stl file that you can load into your 3d Printer slicer so you can 3d print it.
+NOTE: If you already have something in /usr/local/bin called osc, the install script will give you the option to overwrite or not. If you don't, the you'll need to use `openscad-cli` in place of `osc`
 
 ## Intentions
 Assuming I keep working on it, it will also do this stuff:
