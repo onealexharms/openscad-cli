@@ -1,52 +1,42 @@
 #!/bin/bash
 
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
+GREATER_THAN="-gt"
 
 action="$1"
-file_name="$2"
-GREATER_THAN="-gt"
-rm -f test/*.stl
+project_file="$(cat .osc-data)"
+new_project_file="$2"
 
-no_params=($#==0)
-if [ $no_params ]
-then
-  echo "That doesn't work. You're gonna need some params."
-  echo "You can use \`osc start _name_\` (without file extension)"
-  echo "or \`osc _command_\` by itself."
-  echo "If that's unexpected, check the README."
-fi
+function die
+{
+  echo $1;
+  exit 1
+}
 
-if [ $# $GREATER_THAN 2 ]
-then
-  if [ $1 == "start" ]
-  then
-    echo "usage: osc start filename (without extension)"
-  else
-    echo "usage: osc _command_ (without params)"
-  fi
-fi
-
-# $# is number of params remaining in the list
-# the first [ is an alias for the command test, the second ] is just pretty
-# shift moves to the next parameter. Lone paren is for real.
 while [ $# $GREATER_THAN 0 ]; do
   case "$1" in
     start)
-      if [ $# == 1 ]
+      if [ -z "$2" ]
       then
-        echo "useage: osc start filename (without extension)"
+        die "You need to specify what you want to work on. Use a filename, including path but not extension."
+      elif [ ! -z "$3" ]
+      then
+        die "That's too many parameters."
+      else
+        mkdir -p $(dirname $new_project_file)
+        echo $new_project_file > .osc-data
+        touch $new_project_file".scad"
+        exit
       fi
-      echo $file_name > .osc-data
-      touch $file_name".scad"
     ;;
-    test)
+    preview)
     ;;
     render)
-      file_name=$(cat .osc-data)
-      "$OPENSCAD" -o "$file_name.stl" "$file_name.scad"
+      "$OPENSCAD" -o "$project_file.stl" "$project_file.scad"
+      exit 0 
     ;;
-    print)
-    ;;
+    *)
+      die "That's not a recognized command"
   esac
   shift
 done
