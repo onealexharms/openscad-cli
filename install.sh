@@ -8,9 +8,9 @@ then
   echo "If you know it's an earlier version of openscad-cli, you can choose to overwrite it."
   echo "If you aren't sure and you don't want to overwrite it, it's fine. You will just need to use openscad-cli instead of osc."
   printf "Overwrite /usr/local/bin/osc? [y/N]  "
-  read -n 1 choice
+  read -n 1 overwrite_decision
   echo
-  if [ "$choice" != y -a "$choice" != Y ]
+  if [ "$overwrite_decision" != y -a "$overwrite_decision" != Y ]
   then
     exit 0
   fi
