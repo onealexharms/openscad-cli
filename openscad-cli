@@ -7,7 +7,7 @@ action="$1"
 project_file="$(cat .osc-data)"
 new_project_file="$2"
 
-function die
+function die_with_message
 {
   echo $1;
   exit 1
@@ -18,10 +18,10 @@ while [ $# $GREATER_THAN 0 ]; do
     start)
       if [ -z "$2" ]
       then
-        die "You need to specify what you want to work on. Use a filename, including path but not extension."
+        die_with_message "You need to specify what you want to work on. Use a filename, including path but not extension."
       elif [ ! -z "$3" ]
       then
-        die "That's too many parameters."
+        die_with_message "That's too many parameters."
       else
         mkdir -p $(dirname $new_project_file)
         echo $new_project_file > .osc-data
@@ -38,7 +38,7 @@ while [ $# $GREATER_THAN 0 ]; do
       exit 0 
     ;;
     *)
-      die "That's not a recognized command"
+      die_with_message "That's not a recognized command."
   esac
   shift
 done
