@@ -29,12 +29,16 @@ while [ $# $GREATER_THAN 0 ]; do
         exit
       fi
     ;;
+    info)
+      "$OPENSCAD" --info "$project_file.scad"
+    ;;
     preview)
-      "$OPENSCAD" -o "$project_file.png" "$project_file.scad"
-      kitty +kitten icat "$project_file.png"
+      rm preview.png
+      "$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad"
+      kitty +kitten icat preview.png
     ;;
     render)
-      "$OPENSCAD" -o "$project_file.stl" "$project_file.scad"
+      "$OPENSCAD" --hardwarnings -o "$project_file.stl" "$project_file.scad"
       exit 0 
     ;;
     *)
