@@ -30,6 +30,8 @@ while [ $# $GREATER_THAN 0 ]; do
       fi
     ;;
     preview)
+      "$OPENSCAD" -o "$project_file.png" "$project_file.scad"
+      kitty +kitten icat "$project_file.png"
     ;;
     render)
       "$OPENSCAD" -o "$project_file.stl" "$project_file.scad"
