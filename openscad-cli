@@ -29,6 +29,7 @@ case "$1" in
     fi
   ;;
   check)
+    # 2>&1 takes it from STDERR to STDOUT
     result=$("$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad" 2>&1)
     echo $result
     case "$result" in
