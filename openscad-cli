@@ -29,13 +29,16 @@ case "$1" in
     fi
   ;;
   check)
-    "$OPENSCAD" --hardwarnings -o "$project_file.echo" "$projectfile.scad"
-    if [ $? -eq 0 ]
-    then
-      die_with_message "success"
-    else
-      die_with_message "fail"
-    fi
+    result=$("$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad" 2>&1)
+    echo $result
+    case "$result" in
+      *WARNING*)
+        die_with_message "fail"
+        ;;
+      *)
+        die_with_message "success"
+        ;;
+    esac
   ;;
   info)
     "$OPENSCAD" --info "$project_file.scad"
