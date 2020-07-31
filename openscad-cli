@@ -30,16 +30,17 @@ case "$1" in
   ;;
   check)
     # 2>&1 takes it from STDERR to STDOUT
+    "$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad"
     result=$("$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad" 2>&1)
-    echo $result
     case "$result" in
       *WARNING*)
-        die_with_message "fail"
+        die_with_message "Failed."
         ;;
-      *)
-        die_with_message "success"
+      *ERROR*)
+        die_with_message "Failed."
         ;;
     esac
+    echo "All good."
   ;;
   info)
     "$OPENSCAD" --info "$project_file.scad"
