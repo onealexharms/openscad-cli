@@ -26,7 +26,6 @@ function check_file_for_errors
       return 1
       ;;
   esac
-  echo "Looking good."
   return 0
 }
 
@@ -51,13 +50,24 @@ case "$1" in
   ;;
   check)
     check_file_for_errors "$project_file.scad"
-    exit $?
+    result=$?
+    if [ $result -eq 0 ] 
+    then
+      echo "File checks out."
+    else
+      exit 1
+    fi
   ;;
   info)
     "$OPENSCAD" --info "$project_file.scad"
     exit 0
   ;;
   preview)
+    check_file_for_errors "$project_file.scad"
+    if [ $? -ne 0 ]
+    then
+      exit 1
+    fi
     rm preview.png
     "$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad"
     kitty +kitten icat preview.png
