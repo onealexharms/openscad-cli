@@ -9,6 +9,27 @@ then
   project_file=$(cat .osc-data)
 fi
 
+function check_file_for_errors 
+{
+  local temp=$(mktemp XXXXXX.png)
+  local result=$("$OPENSCAD" --hardwarnings -o "$temp" "$1" 2>&1)
+  rm "$temp"
+  case "$result" in
+    *WARNING*)
+      echo $result
+      echo "Failed with warnings."
+      return 1
+      ;;
+    *ERROR*)
+      echo $result
+      echo "Failed with errors."
+      return 1
+      ;;
+  esac
+  echo "Looking good."
+  return 0
+}
+
 function die_with_message
 {
   echo $1;
@@ -29,18 +50,8 @@ case "$1" in
     fi
   ;;
   check)
-    # 2>&1 takes it from STDERR to STDOUT
-    "$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad"
-    result=$("$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad" 2>&1)
-    case "$result" in
-      *WARNING*)
-        die_with_message "Failed."
-        ;;
-      *ERROR*)
-        die_with_message "Failed."
-        ;;
-    esac
-    echo "All good."
+    check_file_for_errors "$project_file.scad"
+    exit $?
   ;;
   info)
     "$OPENSCAD" --info "$project_file.scad"
