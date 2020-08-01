@@ -17,4 +17,3 @@ then
 fi
 
 ln -sf /usr/local/bin/openscad-cli /usr/local/bin/osc
-

@@ -45,7 +45,7 @@ case "$1" in
       touch $new_project_file".scad"
       exit 0
     else
-      die_with_message "Usage: openscad start filename (Inlude the path, but not the extension)"
+      die_with_message "Usage: openscad-cli start filename (Inlude the path, but not the extension)"
     fi
   ;;
   check)
