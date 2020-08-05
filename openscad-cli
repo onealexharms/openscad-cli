@@ -3,11 +3,25 @@
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 GREATER_THAN="-gt"
 
+function die_with_message
+{
+  echo $1;
+  exit 1
+}
+
 action="$1"
-if [ -e ".osc-data" ]
+if [ ! -z $2 ]
 then
-  project_file=$(cat .osc-data)
+  project_file=$2
+elif [ -e ".osc-data" ]
+then
+    project_file=$(cat .osc-data)
+else
+    die_with_message "There's nothing in progress. Specify a work file.."
 fi
+
+echo "--"
+echo "$project_file"
 
 function check_file_for_errors 
 {
@@ -29,24 +43,12 @@ function check_file_for_errors
   return 0
 }
 
-function die_with_message
-{
-  echo $1;
-  exit 1
-}
-
 case "$1" in
   start)
-    if [ ! -z "$2" ]
-    then
-      new_project_file="$2"
-      mkdir -pv $(dirname "$new_project_file")
-      echo $new_project_file > .osc-data
-      touch $new_project_file".scad"
-      exit 0
-    else
-      die_with_message "Usage: openscad-cli start filename (Inlude the path, but not the extension)"
-    fi
+    mkdir -pv $(dirname "$project_file")
+    echo $project_file > .osc-data
+    touch $project_file".scad"
+    exit 0
   ;;
   check)
     check_file_for_errors "$project_file.scad"
