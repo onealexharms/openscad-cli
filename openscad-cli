@@ -3,14 +3,14 @@
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 GREATER_THAN="-gt"
 
-action="$1"
-
 function die_with_message
 {
   message=$1
   echo $1
   exit 1
 }
+
+action="$1"
 
 if [ ! -z $2 ]
 then
