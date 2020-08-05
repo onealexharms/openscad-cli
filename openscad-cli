@@ -43,11 +43,17 @@ function check_file_for_errors
   return 0
 }
 
+function start_working_on
+{
+  mkdir -pv $(dirname "$new_work_file")
+  echo $new_work_file > .osc-data
+  touch $new_work_file".scad"
+  return 0
+}
+
 case $action in
   start)
-    mkdir -pv $(dirname "$work_file")
-    echo $work_file > .osc-data
-    touch $work_file".scad"
+    start_working_on "$work_file"
   ;;
   clean)
     rm .osc-data
