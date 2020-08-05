@@ -12,16 +12,16 @@ function die_with_message
 action="$1"
 if [ ! -z $2 ]
 then
-  project_file=$2
+  work_file=$2
 elif [ -e ".osc-data" ]
 then
-    project_file=$(cat .osc-data)
+    work_file=$(cat .osc-data)
 else
     die_with_message "There's nothing in progress. Specify a work file.."
 fi
 
 echo "--"
-echo "$project_file"
+echo "$work_file"
 
 function check_file_for_errors 
 {
@@ -45,13 +45,13 @@ function check_file_for_errors
 
 case "$1" in
   start)
-    mkdir -pv $(dirname "$project_file")
-    echo $project_file > .osc-data
-    touch $project_file".scad"
+    mkdir -pv $(dirname "$work_file")
+    echo $work_file > .osc-data
+    touch $work_file".scad"
     exit 0
   ;;
   check)
-    check_file_for_errors "$project_file.scad"
+    check_file_for_errors "$work_file.scad"
     result=$?
     if [ $result -eq 0 ] 
     then
@@ -61,22 +61,22 @@ case "$1" in
     fi
   ;;
   info)
-    "$OPENSCAD" --info "$project_file.scad"
+    "$OPENSCAD" --info "$work_file.scad"
     exit 0
   ;;
   preview)
-    check_file_for_errors "$project_file.scad"
+    check_file_for_errors "$work_file.scad"
     if [ $? -ne 0 ]
     then
       exit 1
     fi
     rm preview.png
-    "$OPENSCAD" --hardwarnings -o "preview.png" "$project_file.scad"
+    "$OPENSCAD" --hardwarnings -o "preview.png" "$work_file.scad"
     kitty +kitten icat preview.png
     exit 0
   ;;
   render)
-    "$OPENSCAD" --hardwarnings -o "$project_file.stl" "$project_file.scad"
+    "$OPENSCAD" --hardwarnings -o "$work_file.stl" "$work_file.scad"
     exit 0
   ;;
   *)
