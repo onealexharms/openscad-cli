@@ -45,10 +45,23 @@ function check_file_for_errors
 
 function start_working_on
 {
+  new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
   echo $new_work_file > .osc-data
   touch $new_work_file".scad"
   return 0
+}
+
+function clean_up
+{
+  rm .osc-data
+  rm preview.png
+}
+
+function get_info
+{
+  "$OPENSCAD" --info "$work_file.scad"
+  exit 0
 }
 
 case $action in
@@ -56,8 +69,7 @@ case $action in
     start_working_on "$work_file"
   ;;
   clean)
-    rm .osc-data
-    rm preview.png
+    clean_up
   ;;
   check)
     check_file_for_errors "$work_file.scad"
@@ -70,8 +82,6 @@ case $action in
     fi
   ;;
   info)
-    "$OPENSCAD" --info "$work_file.scad"
-    exit 0
   ;;
   preview)
     check_file_for_errors "$work_file.scad"
