@@ -17,15 +17,13 @@ elif [ -e ".osc-data" ]
 then
     work_file=$(cat .osc-data)
 else
-    die_with_message "There's nothing in progress. Specify a work file.."
+    die_with_message "There's nothing in progress. Specify a work file."
 fi
-
-echo "--"
-echo "$work_file"
 
 function check_file_for_errors 
 {
   local temp=$(mktemp XXXXXX.png)
+  # 2>&1, below, means send stderr to stdout (or vice versa?)
   local result=$("$OPENSCAD" --hardwarnings -o "$temp" "$1" 2>&1)
   rm "$temp"
   case "$result" in
@@ -48,7 +46,10 @@ case "$1" in
     mkdir -pv $(dirname "$work_file")
     echo $work_file > .osc-data
     touch $work_file".scad"
-    exit 0
+  ;;
+  clean)
+    rm .osc-data
+    rm preview.png
   ;;
   check)
     check_file_for_errors "$work_file.scad"
