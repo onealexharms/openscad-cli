@@ -126,9 +126,9 @@ function memory
 
 function main
 {
-  action="$1"
+  local action="$1"
   shift
-  case $action in
+  case "$action" in
     start)
       start_action "$@"
     ;;
