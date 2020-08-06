@@ -33,6 +33,7 @@ function check_file_for_errors
 
 function start_action
 {
+  clean_action
   local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
   touch $new_work_file".scad"
