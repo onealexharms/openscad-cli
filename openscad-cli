@@ -16,10 +16,8 @@ function die_with_message
 
 function check_file_for_errors 
 {
-  local temp=$(mktemp XXXXXX.png)
   # 2>&1, below, means send stderr to stdout
-  local result=$("$OPENSCAD" --hardwarnings -o "$temp" "$1" 2>&1)
-  rm -f "$temp"
+  local result=$("$OPENSCAD" --hardwarnings -o .filecheck.png "$1" 2>&1)
   case "$result" in
     *WARNING*)
       echo $result
@@ -61,12 +59,11 @@ function memory
     cat .osc-data
     return $SUCCESS
   else
-    return $FAIL
+    die_with_message "There's nothing in progress. You'll need to start a new work file."
   fi
 }
 
 action="$1"
-
 
 case $action in
   start)
@@ -80,7 +77,7 @@ case $action in
     work_file="$(memory)"
     if (( $? == $FAIL ))
     then
-      die_with_message "There is nothing in progress. Specify a work file."
+      die_with_message "$work_file"
     fi
     check_file_for_errors "$work_file.scad"
     result=$?
@@ -103,14 +100,13 @@ case $action in
     work_file="$(memory)"
     if (( $? == $FAIL ))
     then
-      die_with_message "There is nothing in progress. Specify a work file."
+      die_with_message "$work_file"
     fi
-    check_file_for_errors $work_file.scad
+    check_file_for_errors "$work_file.scad"
     if (( $? != $SUCCESS ))
     then
-      die_with_message "There's a problem with the file."
+        die_with_message "Correct the issues then try again."
     fi
-    rm -f preview.png
     "$OPENSCAD" --hardwarnings -o "preview.png" "$(memory).scad"
     kitty +kitten icat preview.png
     exit $SUCCESS
