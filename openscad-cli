@@ -1,7 +1,7 @@
 #!/bin/bash
 
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
-GREATER_THAN="-gt"
+
 SUCCESS=0
 FAIL=1
 OSC_ERROR=2
@@ -13,18 +13,6 @@ function die_with_message
   echo $message
   exit $FAIL
 }
-
-action="$1"
-
-if [ ! -z $2 ]
-then
-  work_file=$2
-elif [ -e ".osc-data" ]
-then
-    work_file=$(cat .osc-data)
-else
-    die_with_message "There's nothing in progress. Specify a work file."
-fi
 
 function check_file_for_errors 
 {
@@ -47,7 +35,7 @@ function check_file_for_errors
 
 function start_working_on
 {
-  new_work_file=$1
+  local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
   echo $new_work_file > .osc-data
   touch $new_work_file".scad"
@@ -66,14 +54,34 @@ function get_info
   exit 0
 }
 
+function memory
+{
+  if [ -e ".osc-data" ]
+  then
+    cat .osc-data
+    return $SUCCESS
+  else
+    return $FAIL
+  fi
+}
+
+action="$1"
+
+
 case $action in
   start)
-    start_working_on "$work_file"
+    new_work_file=$2
+    start_working_on "$new_work_file"
   ;;
   clean)
     clean_up
   ;;
   check)
+    work_file="$(memory)"
+    if (( $? == $FAIL ))
+    then
+      die_with_message "There is nothing in progress. Specify a work file."
+    fi
     check_file_for_errors "$work_file.scad"
     result=$?
     if (( result == OSC_WARNING ))
@@ -92,18 +100,27 @@ case $action in
     get_info
   ;;
   preview)
-    check_file_for_errors "$work_file.scad"
-    exit_code=$?
-    if [ $exit_code -ne 0 ]
+    work_file="$(memory)"
+    if (( $? == $FAIL ))
     then
-      exit 1
+      die_with_message "There is nothing in progress. Specify a work file."
     fi
-    rm preview.png
-    "$OPENSCAD" --hardwarnings -o "preview.png" "$work_file.scad"
+    check_file_for_errors $work_file.scad
+    if (( $? != $SUCCESS ))
+    then
+      die_with_message "There's a problem with the file."
+    fi
+    rm -f preview.png
+    "$OPENSCAD" --hardwarnings -o "preview.png" "$(memory).scad"
     kitty +kitten icat preview.png
-    exit 0
+    exit $SUCCESS
   ;;
   render)
+    work_file="$(memory)"
+    if (( $? == $FAIL ))
+    then
+      die_with_message "There is nothing in progress. Specify a work file."
+    fi
     "$OPENSCAD" --hardwarnings -o "$work_file.stl" "$work_file.scad"
     exit 0
   ;;
