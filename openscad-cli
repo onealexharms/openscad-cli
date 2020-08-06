@@ -14,17 +14,17 @@ function die_with_message
   exit $FAIL
 }
 
-function check_file_for_errors 
+function check_for_OpenSCAD_errors 
 {
   # 2>&1, below, means send stderr to stdout
   local result=$("$OPENSCAD" --hardwarnings -o .osc-data/filecheck.png "$1" 2>&1)
   case "$result" in
     *WARNING*)
-      echo $result
+      echo "$result"
       return $OSC_WARNING
       ;;
     *ERROR*)
-      echo $result
+      echo "$result"
       return $OSC_ERROR
       ;;
   esac
@@ -51,7 +51,7 @@ function check_action
   then
     die_with_message "$work_file"
   fi
-  check_file_for_errors "$work_file.scad"
+  check_for_OpenSCAD_errors "$work_file.scad"
   local result=$?
   if (( result == OSC_WARNING ))
   then
@@ -92,7 +92,13 @@ function preview_action
 
 function render_action
 {
-  :
+  if ! preview_action
+  then
+    return $FAIL
+  fi
+  local working_file=$(memory)
+  "$OPENSCAD" --hardwarnings -o "$working_file.stl" "$working_file.scad"
+  return $SUCCESS
 }
 
 function memory
@@ -125,13 +131,7 @@ case $action in
     preview_action
   ;;
   render)
-    work_file="$(memory)"
-    if (( $? == $FAIL ))
-    then
-      die_with_message "There is nothing in progress. Specify a work file."
-    fi
-    "$OPENSCAD" --hardwarnings -o "$work_file.stl" "$work_file.scad"
-    exit 0
+    render_action
   ;;
   *)
     die_with_message "That's not a recognized command."
