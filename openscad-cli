@@ -42,6 +42,28 @@ function start_action
   return 0
 }
 
+function check_action
+{
+  work_file="$(memory)"
+  if (( $? == $FAIL ))
+  then
+    die_with_message "$work_file"
+  fi
+  check_file_for_errors "$work_file.scad"
+  result=$?
+  if (( result == OSC_WARNING ))
+  then
+    echo "Failed with warnings."
+    exit $FAIL
+  elif (( $result == $OSC_ERROR ))
+  then
+    echo "File has errors."
+    exit $FAIL
+  else
+    echo "File checks out."
+  fi
+}
+
 function clean_action
 {
   rm -rf .osc-data
@@ -75,24 +97,7 @@ case $action in
     clean_action
   ;;
   check)
-    work_file="$(memory)"
-    if (( $? == $FAIL ))
-    then
-      die_with_message "$work_file"
-    fi
-    check_file_for_errors "$work_file.scad"
-    result=$?
-    if (( result == OSC_WARNING ))
-    then
-      echo "Failed with warnings."
-      exit $FAIL
-    elif (( $result == $OSC_ERROR ))
-    then
-      echo "File has errors."
-      exit $FAIL
-    else
-      echo "File checks out."
-    fi
+    check_action
   ;;
   info)
     get_info
