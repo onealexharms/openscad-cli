@@ -2,12 +2,16 @@
 
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 GREATER_THAN="-gt"
+SUCCESS=0
+FAIL=1
+OSC_ERROR=2
+OSC_WARNING=3
 
 function die_with_message
 {
   message=$1
-  echo $1
-  exit 1
+  echo $message
+  exit $FAIL
 }
 
 action="$1"
@@ -25,19 +29,17 @@ fi
 function check_file_for_errors 
 {
   local temp=$(mktemp XXXXXX.png)
-  # 2>&1, below, means send stderr to stdout (or vice versa?)
+  # 2>&1, below, means send stderr to stdout
   local result=$("$OPENSCAD" --hardwarnings -o "$temp" "$1" 2>&1)
-  rm "$temp"
+  rm -f "$temp"
   case "$result" in
     *WARNING*)
       echo $result
-      echo "Failed with warnings."
-      return 1
+      return $OSC_WARNING
       ;;
     *ERROR*)
       echo $result
-      echo "Failed with errors."
-      return 1
+      return $OSC_ERROR
       ;;
   esac
   return 0
@@ -54,8 +56,8 @@ function start_working_on
 
 function clean_up
 {
-  rm .osc-data
-  rm preview.png
+  rm -f .osc-data
+  rm -f preview.png
 }
 
 function get_info
@@ -74,11 +76,16 @@ case $action in
   check)
     check_file_for_errors "$work_file.scad"
     result=$?
-    if [ $result -eq 0 ] 
+    if (( result == OSC_WARNING ))
     then
-      echo "File checks out."
+      echo "Failed with warnings."
+      exit $FAIL
+    elif (( $result == $OSC_ERROR ))
+    then
+      echo "File has errors."
+      exit $FAIL
     else
-      exit 1
+      echo "File checks out."
     fi
   ;;
   info)
