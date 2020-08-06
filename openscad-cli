@@ -92,6 +92,18 @@ function preview_action
 
 function render_action
 {
+  if ! check_action
+  then
+    return $FAIL
+  fi
+  "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(memory).scad"
+  kitty +kitten icat ".osc-data/preview.png"
+  echo "Render only does preview for some reason." 
+  return $SUCCESS
+}
+
+function export_action
+{
   if ! preview_action
   then
     return $FAIL
@@ -132,6 +144,9 @@ case $action in
   ;;
   render)
     render_action
+  ;;
+  export)
+    export_action
   ;;
   *)
     die_with_message "That's not a recognized command."
