@@ -79,6 +79,22 @@ function info_action
   :
 }
 
+function preview_action
+{
+  if ! check_action
+  then
+    return $FAIL
+  fi
+  "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(memory).scad"
+  kitty +kitten icat ".osc-data/preview.png"
+  return $SUCCESS
+}
+
+function render_action
+{
+  :
+}
+
 function memory
 {
   if [ -e ".osc-data/working_file" ]
@@ -106,19 +122,7 @@ case $action in
     info_action
   ;;
   preview)
-    work_file="$(memory)"
-    if (( $? == $FAIL ))
-    then
-      die_with_message "$work_file"
-    fi
-    check_file_for_errors "$work_file.scad"
-    if (( $? != $SUCCESS ))
-    then
-        die_with_message "Correct the issues then try again."
-    fi
-    "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(memory).scad"
-    kitty +kitten icat .osc-data/preview.png
-    exit $SUCCESS
+    preview_action
   ;;
   render)
     work_file="$(memory)"
