@@ -17,7 +17,7 @@ function die_with_message
 function check_file_for_errors 
 {
   # 2>&1, below, means send stderr to stdout
-  local result=$("$OPENSCAD" --hardwarnings -o .filecheck.png "$1" 2>&1)
+  local result=$("$OPENSCAD" --hardwarnings -o .osc-data/filecheck.png "$1" 2>&1)
   case "$result" in
     *WARNING*)
       echo $result
@@ -35,15 +35,15 @@ function start_working_on
 {
   local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
-  echo $new_work_file > .osc-data
   touch $new_work_file".scad"
+  mkdir -p ".osc-data"
+  echo $new_work_file > ".osc-data/working_file"
   return 0
 }
 
-function clean_up
+function clean_action
 {
-  rm -f .osc-data
-  rm -f preview.png
+  rm -rf .osc-data
 }
 
 function get_info
@@ -54,9 +54,9 @@ function get_info
 
 function memory
 {
-  if [ -e ".osc-data" ]
+  if [ -e ".osc-data/working_file" ]
   then
-    cat .osc-data
+    cat .osc-data/working_file
     return $SUCCESS
   else
     die_with_message "There's nothing in progress. You'll need to start a new work file."
@@ -67,11 +67,10 @@ action="$1"
 
 case $action in
   start)
-    new_work_file=$2
-    start_working_on "$new_work_file"
+    start_working_on $2
   ;;
   clean)
-    clean_up
+    clean_action
   ;;
   check)
     work_file="$(memory)"
@@ -107,8 +106,8 @@ case $action in
     then
         die_with_message "Correct the issues then try again."
     fi
-    "$OPENSCAD" --hardwarnings -o "preview.png" "$(memory).scad"
-    kitty +kitten icat preview.png
+    "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(memory).scad"
+    kitty +kitten icat .osc-data/preview.png
     exit $SUCCESS
   ;;
   render)
