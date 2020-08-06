@@ -31,7 +31,7 @@ function check_file_for_errors
   return 0
 }
 
-function start_working_on
+function start_action
 {
   local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
@@ -64,10 +64,10 @@ function memory
 }
 
 action="$1"
-
+shift
 case $action in
   start)
-    start_working_on $2
+    start_action "$@"
   ;;
   clean)
     clean_action
