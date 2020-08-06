@@ -124,35 +124,22 @@ function memory
   fi
 }
 
+function is_valid_command
+{
+  local action=$1
+  type "${action}_action" 2>/dev/null | grep -q "function"
+}
+
 function main
 {
   local action="$1"
   shift
-  case "$action" in
-    start)
-      start_action "$@"
-    ;;
-    clean)
-      clean_action
-    ;;
-    check)
-      check_action
-    ;;
-    info)
-      info_action
-    ;;
-    preview)
-      preview_action
-    ;;
-    render)
-      render_action
-    ;;
-    export)
-      export_action
-    ;;
-    *)
-      die_with_message "That's not a recognized command."
-  esac
+  if is_valid_command "$action"
+  then
+    "${action}_action" "$@"
+  else
+    die_with_message "That's not a valid command." 
+  fi
 }
 
 main "$@"
