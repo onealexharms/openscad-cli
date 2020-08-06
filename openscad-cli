@@ -44,23 +44,26 @@ function start_action
 
 function check_action
 {
+  # local can't go on the assignment because local exits with 0 so no test happens
+  local work_file
   work_file="$(memory)"
   if (( $? == $FAIL ))
   then
     die_with_message "$work_file"
   fi
   check_file_for_errors "$work_file.scad"
-  result=$?
+  local result=$?
   if (( result == OSC_WARNING ))
   then
     echo "Failed with warnings."
-    exit $FAIL
+    return $FAIL
   elif (( $result == $OSC_ERROR ))
   then
-    echo "File has errors."
-    exit $FAIL
+    echo "Failed with errors."
+    return $FAIL
   else
-    echo "File checks out."
+    echo "No errors found."
+    return $SUCCESS
   fi
 }
 
@@ -69,7 +72,7 @@ function clean_action
   rm -rf .osc-data
 }
 
-function get_info
+function info_action
 {
   # "$OPENSCAD" --info "$work_file.scad"
   # exit 0
@@ -100,7 +103,7 @@ case $action in
     check_action
   ;;
   info)
-    get_info
+    info_action
   ;;
   preview)
     work_file="$(memory)"
