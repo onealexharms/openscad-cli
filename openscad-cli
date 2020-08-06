@@ -49,8 +49,9 @@ function clean_action
 
 function get_info
 {
-  "$OPENSCAD" --info "$work_file.scad"
-  exit 0
+  # "$OPENSCAD" --info "$work_file.scad"
+  # exit 0
+  :
 }
 
 function memory
