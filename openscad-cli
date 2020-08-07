@@ -36,7 +36,7 @@ function start_action
   clean_action
   local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
-  touch $new_work_file".scad"
+  touch "$new_work_file"
   mkdir -p ".osc-data"
   echo $new_work_file > ".osc-data/working_file"
   return 0
@@ -51,7 +51,7 @@ function check_action
   then
     die_with_message "$work_file"
   fi
-  check_for_OpenSCAD_errors "$work_file.scad"
+  check_for_OpenSCAD_errors "$work_file"
   local result=$?
   if (( result == OSC_WARNING ))
   then
@@ -74,7 +74,7 @@ function clean_action
 
 function info_action
 {
-  # "$OPENSCAD" --info "$work_file.scad"
+  # "$OPENSCAD" --info whatever-_ffila6jjkdjslkjgf
   # exit 0
   :
 }
@@ -85,7 +85,7 @@ function preview_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(last_working_file).scad"
+  "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(last_working_file)"
   kitty +kitten icat ".osc-data/preview.png"
   return $SUCCESS
 }
@@ -96,20 +96,27 @@ function render_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(last_working_file).scad"
+  "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(last_working_file)"
   kitty +kitten icat ".osc-data/preview.png"
   echo "Render only does preview for some reason." 
   return $SUCCESS
 }
 
+function make_stl
+{
+  local x=$1
+  echo "${x%.scad}.stl"
+}
+
 function export_action
 {
-  if ! preview_action
+  if ! check_action
   then
     return $FAIL
   fi
+  mkdir -p "stl"
   local working_file=$(last_working_file)
-  "$OPENSCAD" --hardwarnings -o "$working_file.stl" "$working_file.scad"
+  "$OPENSCAD" --hardwarnings -o "$(make_stl "$working_file")" "$working_file"
   return $SUCCESS
 }
 
