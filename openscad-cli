@@ -38,6 +38,9 @@ function start_action
   if [ -z $1 ]
   then
     die_with_message "You need to specify a .scad file to work on."
+  elif [ $(basename "$1" .scad) = $(basename "$1") ]
+  then
+    die_with_message "Working file should end in .scad"
   fi
   local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
