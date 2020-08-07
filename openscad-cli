@@ -79,9 +79,9 @@ function clean_action
 
 function info_action
 {
-  # "$OPENSCAD" --info whatever-_ffila6jjkdjslkjgf
-  # exit 0
-  :
+  check_action
+  echo "-------------------"
+  "$OPENSCAD" --info "$(last_working_file)"
 }
 
 function preview_action
