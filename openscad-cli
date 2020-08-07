@@ -46,7 +46,7 @@ function check_action
 {
   # local can't go on the assignment because local exits with 0 so no test happens
   local work_file
-  work_file="$(memory)"
+  work_file="$(last_working_file)"
   if (( $? == $FAIL ))
   then
     die_with_message "$work_file"
@@ -85,7 +85,7 @@ function preview_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(memory).scad"
+  "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(last_working_file).scad"
   kitty +kitten icat ".osc-data/preview.png"
   return $SUCCESS
 }
@@ -96,7 +96,7 @@ function render_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(memory).scad"
+  "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(last_working_file).scad"
   kitty +kitten icat ".osc-data/preview.png"
   echo "Render only does preview for some reason." 
   return $SUCCESS
@@ -108,12 +108,12 @@ function export_action
   then
     return $FAIL
   fi
-  local working_file=$(memory)
+  local working_file=$(last_working_file)
   "$OPENSCAD" --hardwarnings -o "$working_file.stl" "$working_file.scad"
   return $SUCCESS
 }
 
-function memory
+function last_working_file
 {
   if [ -e ".osc-data/working_file" ]
   then
@@ -138,7 +138,7 @@ function main
   then
     "${action}_action" "$@"
   else
-    die_with_message "That's not a valid command." 
+    die_with_message "That's not a valid command."
   fi
 }
 
