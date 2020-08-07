@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VIEWING_COMMAND="kitty +kitten icat"
+
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
 SUCCESS=0
@@ -90,7 +92,7 @@ function preview_action
     return $FAIL
   fi
   "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(last_working_file)"
-  kitty +kitten icat ".osc-data/preview.png"
+  $VIEWING_COMMAND ".osc-data/preview.png"
   return $SUCCESS
 }
 
