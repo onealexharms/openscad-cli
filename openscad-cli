@@ -59,6 +59,7 @@ function check_action
   then
     die_with_message "$work_file"
   fi
+  echo "Checking "$work_file""
   check_for_OpenSCAD_errors "$work_file"
   local result=$?
   if (( result == OSC_WARNING ))
@@ -70,7 +71,7 @@ function check_action
     echo "Failed with errors."
     return $FAIL
   else
-    echo "Checked. No OpenSCAD errors reported."
+    echo "No OpenSCAD errors reported."
     return $SUCCESS
   fi
 }
@@ -119,7 +120,7 @@ function send_action
     return $FAIL
   fi
   local working_file=$(last_working_file)
-  echo "Opening "$working_file" in "$SLICER""
+  echo "Opening in "$SLICER""
   stl_from_scad "$working_file"
   open -a "$SLICER" .osc-data/working_file.stl
 }
