@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VIEWING_COMMAND="kitty +kitten icat"
+readonly VIEWING_COMMAND="kitty +kitten icat"
 
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
