@@ -34,7 +34,6 @@ function check_for_OpenSCAD_errors
 
 function start_action
 {
-  clean_action
   if [ -z $1 ]
   then
     die_with_message "You need to specify a .scad file to work on."
@@ -42,6 +41,7 @@ function start_action
   then
     die_with_message "Working file should end in .scad"
   fi
+  clean_action
   local new_work_file=$1
   mkdir -pv $(dirname "$new_work_file")
   touch "$new_work_file"
