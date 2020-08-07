@@ -1,7 +1,6 @@
 #!/bin/bash
 
 readonly VIEWING_COMMAND="kitty +kitten icat"
-
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 
 SUCCESS=0
@@ -104,6 +103,7 @@ function render_action
   fi
   "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(last_working_file)"
   kitty +kitten icat ".osc-data/preview.png"
+  echo "---------------Note----------------------"
   echo "Render only does preview for some reason." 
   return $SUCCESS
 }
