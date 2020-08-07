@@ -67,7 +67,7 @@ function check_action
     echo "Failed with errors."
     return $FAIL
   else
-    echo "No errors found."
+    echo "Checked. No OpenSCAD errors reported."
     return $SUCCESS
   fi
 }
@@ -101,29 +101,31 @@ function render_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --render=1 -o ".osc-data/preview.png" "$(last_working_file)"
+  "$OPENSCAD" --render -o ".osc-data/preview.png" "$(last_working_file)"
   kitty +kitten icat ".osc-data/preview.png"
   echo "---------------Note----------------------"
   echo "Render only does preview for some reason." 
-  return $SUCCESS
+  echo "exit code 1 until that's fixed."
+  return $FAIL
 }
 
-function make_stl
-{
-  local x=$1
-  echo "${x%.scad}.stl"
-}
-
-function export_action
+function send_action
 {
   if ! check_action
   then
     return $FAIL
   fi
-  mkdir -p "stl"
+  mkdir -p ".osc-data/stl"
   local working_file=$(last_working_file)
-  "$OPENSCAD" --hardwarnings -o "$(make_stl "$working_file")" "$working_file"
-  return $SUCCESS
+  stl_from_scad "$working_file"
+  open -a "Ultimaker Cura" .osc-data/working_file.stl
+}
+
+function stl_from_scad
+{
+  local scad_file=$1
+  local file_without_extension=$(basename "$scad_file" .scad)
+  "$OPENSCAD" --hardwarnings -o ".osc-data/working_file.stl" "$scad_file"
 }
 
 function last_working_file
