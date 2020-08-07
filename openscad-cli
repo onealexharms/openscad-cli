@@ -46,7 +46,7 @@ function start_action
   mkdir -pv $(dirname "$new_work_file")
   touch "$new_work_file"
   mkdir -p ".osc-data"
-  echo $new_work_file > ".osc-data/working_file"
+  echo $new_work_file > ".osc-data/currently_active_working_file"
   return 0
 }
 
@@ -136,7 +136,7 @@ function last_working_file
 {
   if [ -e ".osc-data/working_file" ]
   then
-    cat .osc-data/working_file
+    cat .osc-data/currently_active_working_file
     return $SUCCESS
   else
     die_with_message "There's nothing in progress. You'll need to start a new work file."
