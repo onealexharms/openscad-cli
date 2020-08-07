@@ -47,7 +47,7 @@ function start_action
   touch "$new_work_file"
   mkdir -p ".osc-data"
   echo $new_work_file > ".osc-data/currently_active_working_file"
-  return 0
+  return $SUCCESS
 }
 
 function check_action
@@ -118,9 +118,8 @@ function send_action
   then
     return $FAIL
   fi
-  echo "Off to $SLICER"
-  mkdir -p ".osc-data/stl"
   local working_file=$(last_working_file)
+  echo "Opening "$working_file" in "$SLICER""
   stl_from_scad "$working_file"
   open -a "$SLICER" .osc-data/working_file.stl
 }
@@ -134,7 +133,7 @@ function stl_from_scad
 
 function last_working_file
 {
-  if [ -e ".osc-data/working_file" ]
+  if [ -e ".osc-data/currently_active_working_file" ]
   then
     cat .osc-data/currently_active_working_file
     return $SUCCESS
