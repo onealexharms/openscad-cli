@@ -3,6 +3,9 @@
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 readonly VIEWING_COMMAND="kitty +kitten icat"
 readonly SLICER="Ultimaker Cura"
+# You probably have the $EDITOR environment variable set
+#   If not, set it here:
+readonly EDITOR="/usr/bin/vim"
 
 readonly SUCCESS=0
 readonly FAIL=1
@@ -42,11 +45,12 @@ function start_action
     die_with_message "Working file should end in .scad"
   fi
   clean_action
-  local new_work_file=$1
-  mkdir -pv $(dirname "$new_work_file")
-  touch "$new_work_file"
+  local working_file=$1
+  mkdir -pv $(dirname "$working_file")
+  touch "$working_file"
   mkdir -p ".osc-data"
-  echo $new_work_file > ".osc-data/currently_active_working_file"
+  echo $working_file > ".osc-data/currently_active_working_file"
+  "$EDITOR" "$working_file"
   return $SUCCESS
 }
 
