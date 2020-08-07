@@ -1,17 +1,17 @@
 #!/bin/bash
 
-readonly VIEWING_COMMAND="kitty +kitten icat"
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
+readonly VIEWING_COMMAND="kitty +kitten icat"
+readonly SLICER="Ultimaker Cura"
 
-SUCCESS=0
-FAIL=1
-OSC_ERROR=2
-OSC_WARNING=3
+readonly SUCCESS=0
+readonly FAIL=1
+readonly OSC_ERROR=2
+readonly OSC_WARNING=3
 
 function die_with_message
 {
-  message=$1
-  echo $message
+  echo $1
   exit $FAIL
 }
 
@@ -115,10 +115,11 @@ function send_action
   then
     return $FAIL
   fi
+  echo "Off to $SLICER"
   mkdir -p ".osc-data/stl"
   local working_file=$(last_working_file)
   stl_from_scad "$working_file"
-  open -a "Ultimaker Cura" .osc-data/working_file.stl
+  open -a "$SLICER" .osc-data/working_file.stl
 }
 
 function stl_from_scad
