@@ -1,3 +1,4 @@
 *.stl
 *.png
 .osc-data
+.DS_Store
