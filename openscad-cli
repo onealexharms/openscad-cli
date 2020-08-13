@@ -40,6 +40,9 @@ function start_action
   if [ -z $1 ]
   then
     die_with_message "You need to specify a .scad file to work on."
+  elif [ $1="help" ] || [ $1="--help" ] || [ $1="-help" ]
+  then
+    die_with_message "Usage: osc start something.scad"
   elif [ $(basename "$1" .scad) = $(basename "$1") ]
   then
     die_with_message "Working file should end in .scad"
@@ -147,6 +150,18 @@ function last_working_file
   fi
 }
 
+function help_action
+{
+  echo "Here are things you can do:"
+  valid_commands
+}
+
+function valid_commands
+{
+  all_the_functions="$(declare -F | awk '/_action/{sub(/_action/,"",$3);print $3}')"
+  echo "$all_the_functions"   
+}
+
 function is_valid_command
 {
   local action=$1
@@ -161,8 +176,11 @@ function main
   then
     "${action}_action" "$@"
   else
-    die_with_message "That's not a valid command."
+    echo "That's not a valid command. Here are things you can do:"
+    valid_commands
+    die_with_message
   fi
 }
 
+#Dear future me, `main "$@" calls the main function with all the parameters this script was called with.
 main "$@"
