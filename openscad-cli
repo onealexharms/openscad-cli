@@ -40,9 +40,6 @@ function start_action
   if [ -z $1 ]
   then
     die_with_message "You need to specify a .scad file to work on."
-  elif [ $1="help" ] || [ $1="--help" ] || [ $1="-help" ]
-  then
-    die_with_message "Usage: osc start something.scad"
   elif [ $(basename "$1" .scad) = $(basename "$1") ]
   then
     die_with_message "Working file should end in .scad"
