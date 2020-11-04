@@ -98,7 +98,7 @@ function preview_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --hardwarnings -o ".osc-data/preview.png" "$(last_working_file)"
+  "$OPENSCAD" --colorscheme=BeforeDawn --viewall --hardwarnings -o ".osc-data/preview.png" "$(last_working_file)"
   $VIEWING_COMMAND ".osc-data/preview.png"
   return $SUCCESS
 }
@@ -109,12 +109,8 @@ function render_action
   then
     return $FAIL
   fi
-  "$OPENSCAD" --render -o ".osc-data/preview.png" "$(last_working_file)"
+  "$OPENSCAD" --colorscheme=Starnight --render -o ".osc-data/preview.png" "$(last_working_file)"
   kitty +kitten icat ".osc-data/preview.png"
-  echo "---------------Note----------------------"
-  echo "Render only does preview for some reason." 
-  echo "exit code 1 until that's fixed."
-  return $FAIL
 }
 
 function send_action
