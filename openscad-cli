@@ -47,13 +47,14 @@ function start_action
   touch "$working_file"
   mkdir -p ".osc-data"
   echo $working_file > ".osc-data/currently_active_working_file"
-  "$EDITOR" "$working_file"
   return $SUCCESS
 }
 
 function edit_action
 {
+  local working_file="$1"
   start_action "$@"
+  "$EDITOR" "$working_file"
 }
 
 function check_action
@@ -154,7 +155,7 @@ function help_action
 function valid_commands
 {
   all_the_functions="$(declare -F | awk '/_action/{sub(/_action/,"",$3);print $3}')"
-  echo "$all_the_functions"   
+  echo "$all_the_functions"
 }
 
 function is_valid_command
