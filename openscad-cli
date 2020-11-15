@@ -3,9 +3,6 @@
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 readonly VIEWING_COMMAND="kitty +kitten icat"
 readonly SLICER="Ultimaker Cura"
-# You probably have the $EDITOR environment variable set
-#   If not, set it here:
-readonly EDITOR="/usr/bin/vim"
 
 readonly SUCCESS=0
 readonly FAIL=1
