@@ -51,6 +51,11 @@ function start_action
   return $SUCCESS
 }
 
+function edit_action
+{
+  start_action "$@"
+}
+
 function check_action
 {
   # local can't go on the assignment because local exits with 0 so no test happens
