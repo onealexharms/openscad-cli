@@ -52,8 +52,14 @@ function start_action
 
 function edit_action
 {
-  local working_file="$1"
-  start_action "$@"
+  local working_file
+  if (( $# > 0 ))
+  then
+    working_file="$1"
+  else
+    working_file="$(last_working_file)"
+  fi
+  start_action "$working_file"
   "$EDITOR" "$working_file"
 }
 
