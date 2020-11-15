@@ -65,7 +65,7 @@ function edit_action
 
 function check_action
 {
-  # local can't go on the assignment because local exits with 0 so no test happens
+  # declaration can't go on the assignment because local exits with 0 so no test happens
   local work_file
   work_file="$(last_working_file)"
   if (( $? == $FAIL ))
@@ -120,6 +120,12 @@ function render_action
   fi
   "$OPENSCAD" --colorscheme=Starnight --render -o ".osc-data/preview.png" "$(last_working_file)"
   kitty +kitten icat ".osc-data/preview.png"
+}
+
+function pr_action
+{
+    preview_action
+    render_action
 }
 
 function send_action
