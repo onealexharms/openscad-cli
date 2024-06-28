@@ -12,6 +12,18 @@ The command line access feels a bit complex to me, so really this is for conveni
 OpenSCAD-cli is covered by the same license OpenSCAD uses (as of 22 July 2020), the GNU General Public License. Everything we do is under the [Maitria Code of Welcoming Conduct](http:maitria.com/coc).
 
 ## Installing
+
+### bpkg
+`bpkg install`
+
+### Make 
+`make install` 
+
+By default, will install as `osc`, if you have a conflict on your system you can use a command-line argument
+
+`make install INSTALL_NAME=openscad-cli`
+
+### Manually
 OpenSCAD-cli is a simple shell script, and it's installed using a very tiny install script that puts it in /usr/local/bin, and also puts a symlink (alias) into your /usr/local/bin, so you can invoke it using `osc` instead of typing `openSCAD-cli` all the time. (If you already have an osc, it will ask before stomping on it.).
 
 There are either constants at the top of the script for you to customize, or there's a config file at ~/.config/openscad-cli.config, depending on whether I've gotten around to it when you see this.

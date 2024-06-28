@@ -1,0 +1,8 @@
+{
+  "name": "openscad-cli",
+  "version": "1.0.0",
+  "description": "Human-friendly wrapper for openSCAD-cli",
+  "global": "true",
+  "scripts": [ "openscad-cli" ],
+  "install": "make install"
+}

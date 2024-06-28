@@ -1,23 +1,27 @@
 #!/bin/bash
 
+# Constants for external applications and exit codes
 readonly OPENSCAD="/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
 readonly VIEWING_COMMAND="kitty +kitten icat"
 readonly SLICER="Ultimaker Cura"
 
+# Exit codes for script results
 readonly SUCCESS=0
 readonly FAIL=1
 readonly OSC_ERROR=2
 readonly OSC_WARNING=3
 
-function die_with_message
-{
+# Function to display a message and exit with a failure status
+# @param $1 {string} The message to display before exiting.
+function die_with_message {
   echo $1
   exit $FAIL
 }
 
-function check_for_OpenSCAD_errors 
-{
-  # 2>&1, below, means send stderr to stdout
+# Function to check for errors and warnings in an OpenSCAD file
+# @param $1 {string} The path to the OpenSCAD file to check.
+# @returns {int} The result code: OSC_WARNING, OSC_ERROR, or SUCCESS.
+function check_for_OpenSCAD_errors {
   local result=$("$OPENSCAD" --hardwarnings -o .osc-data/filecheck.png "$1" 2>&1)
   case "$result" in
     *WARNING*)
@@ -29,16 +33,16 @@ function check_for_OpenSCAD_errors
       return $OSC_ERROR
       ;;
   esac
-  return 0
+  return $SUCCESS
 }
 
-function start_action
-{
-  if [ -z $1 ]
-  then
+# Function to start a new OpenSCAD action
+# @param $1 {string} The path to the OpenSCAD (.scad) file to start working on.
+# @returns {int} The result code: SUCCESS or FAIL.
+function start_action {
+  if [ -z $1 ]; then
     die_with_message "You need to specify a .scad file to work on."
-  elif [ $(basename "$1" .scad) = $(basename "$1") ]
-  then
+  elif [ $(basename "$1" .scad) = $(basename "$1") ]; then
     die_with_message "Working file should end in .scad"
   fi
   clean_action
@@ -50,11 +54,11 @@ function start_action
   return $SUCCESS
 }
 
-function edit_action
-{
+# Function to edit an OpenSCAD file
+# @param $1 {string} [optional] The path to the OpenSCAD file to edit. If not provided, the last working file is used.
+function edit_action {
   local working_file
-  if (( $# > 0 ))
-  then
+  if (( $# > 0 )); then
     working_file="$1"
   else
     working_file="$(last_working_file)"
@@ -63,24 +67,21 @@ function edit_action
   "$EDITOR" "$working_file"
 }
 
-function check_action
-{
-  # declaration can't go on the assignment because local exits with 0 so no test happens
+# Function to check the current working OpenSCAD file for errors
+# @returns {int} The result code: SUCCESS, FAIL, OSC_WARNING, or OSC_ERROR.
+function check_action {
   local work_file
   work_file="$(last_working_file)"
-  if (( $? == $FAIL ))
-  then
+  if (( $? == $FAIL )); then
     die_with_message "$work_file"
   fi
-  echo "Checking "$work_file""
+  echo "Checking $work_file"
   check_for_OpenSCAD_errors "$work_file"
   local result=$?
-  if (( result == OSC_WARNING ))
-  then
+  if (( result == OSC_WARNING )); then
     echo "Failed with warnings."
     return $FAIL
-  elif (( $result == $OSC_ERROR ))
-  then
+  elif (( result == $OSC_ERROR )); then
     echo "Failed with errors."
     return $FAIL
   else
@@ -89,22 +90,24 @@ function check_action
   fi
 }
 
-function clean_action
-{
+# Function to clean up the working environment
+# @returns {void}
+function clean_action {
   rm -rf .osc-data
 }
 
-function info_action
-{
+# Function to display information about the current working OpenSCAD file
+# @returns {void}
+function info_action {
   check_action
   echo "-------------------"
   "$OPENSCAD" --info "$(last_working_file)"
 }
 
-function preview_action
-{
-  if ! check_action
-  then
+# Function to preview the current working OpenSCAD file
+# @returns {int} The result code: SUCCESS or FAIL.
+function preview_action {
+  if ! check_action; then
     return $FAIL
   fi
   "$OPENSCAD" --colorscheme=BeforeDawn --viewall --hardwarnings -o ".osc-data/preview.png" "$(last_working_file)"
@@ -112,45 +115,49 @@ function preview_action
   return $SUCCESS
 }
 
-function render_action
-{
-  if ! check_action
-  then
+# Function to render the current working OpenSCAD file
+# @returns {int} The result code: SUCCESS or FAIL.
+function render_action {
+  if ! check_action; then
     return $FAIL
   fi
   "$OPENSCAD" --colorscheme=Starnight --render -o ".osc-data/preview.png" "$(last_working_file)"
-  kitty +kitten icat ".osc-data/preview.png"
+  $VIEWING_COMMAND ".osc-data/preview.png"
+  return $SUCCESS
 }
 
-function pr_action
-{
-    preview_action
-    render_action
+# Function to preview and then render the current working OpenSCAD file
+# @returns {void}
+function pr_action {
+  preview_action
+  render_action
 }
 
-function send_action
-{
-  if ! check_action
-  then
+# Function to send the current working OpenSCAD file to the slicer
+# @returns {int} The result code: SUCCESS or FAIL.
+function send_action {
+  if ! check_action; then
     return $FAIL
   fi
   local working_file=$(last_working_file)
-  echo "Opening in "$SLICER""
+  echo "Opening in $SLICER"
   stl_from_scad "$working_file"
   open -a "$SLICER" .osc-data/working_file.stl
 }
 
-function stl_from_scad
-{
+# Function to generate an STL file from an OpenSCAD file
+# @param $1 {string} The path to the OpenSCAD file to convert to STL.
+# @returns {void}
+function stl_from_scad {
   local scad_file=$1
   local file_without_extension=$(basename "$scad_file" .scad)
   "$OPENSCAD" --hardwarnings -o ".osc-data/working_file.stl" "$scad_file"
 }
 
-function last_working_file
-{
-  if [ -e ".osc-data/currently_active_working_file" ]
-  then
+# Function to get the last working OpenSCAD file
+# @returns {string} The path to the last working OpenSCAD file, or exits with a failure message if none found.
+function last_working_file {
+  if [ -e ".osc-data/currently_active_working_file" ]; then
     cat .osc-data/currently_active_working_file
     return $SUCCESS
   else
@@ -158,30 +165,36 @@ function last_working_file
   fi
 }
 
-function help_action
-{
+# Function to display available actions
+# @returns {void}
+function help_action {
   echo "Here are things you can do:"
   valid_commands
 }
 
-function valid_commands
-{
+# Function to list all valid commands
+# @returns {void}
+function valid_commands {
   all_the_functions="$(declare -F | awk '/_action/{sub(/_action/,"",$3);print $3}')"
   echo "$all_the_functions"
 }
 
-function is_valid_command
-{
+# Function to check if a command is valid
+# @param $1 {string} The command to check.
+# @returns {int} The result code: SUCCESS if valid, FAIL otherwise.
+function is_valid_command {
   local action=$1
   type "${action}_action" 2>/dev/null | grep -q "function"
 }
 
-function main
-{
+# Main function to handle the script's input arguments and execute the corresponding action
+# @param $1 {string} The action to perform.
+# @param $@ {string[]} The arguments for the action.
+# @returns {void}
+function main {
   local action="$1"
   shift
-  if is_valid_command "$action"
-  then
+  if is_valid_command "$action"; then
     "${action}_action" "$@"
   else
     echo "That's not a valid command. Here are things you can do:"
@@ -190,5 +203,5 @@ function main
   fi
 }
 
-#Dear future me, `main "$@" calls the main function with all the parameters this script was called with.
+# Dear future me, `main "$@"` calls the main function with all the parameters this script was called with.
 main "$@"
